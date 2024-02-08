@@ -12,10 +12,10 @@ func TestHandleRedirect(t *testing.T) {
 	shortener := idToURLMap{
 		links: make(map[string]string),
 	}
-	shortener.id = generateID()
+	shortener.id = "123"
 	shortener.links[shortener.id] = "https://practicum.yandex.ru/"
-
-	req, err := http.NewRequest("GET", "/shortener.id", nil)
+	shortenedURL := fmt.Sprintf("http://localhost:8080/%s", shortener.id)
+	req, err := http.NewRequest("GET", shortenedURL, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -46,7 +46,7 @@ func TestHandleShortenURL(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	shortener.id = generateID()
+	shortener.id = "123"
 	rr := httptest.NewRecorder()
 	shortener.handleShortenURL(rr, req)
 
