@@ -64,7 +64,6 @@ func (iu idToURLMap) handleRedirect(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, originalURL, http.StatusTemporaryRedirect)
 }
-
 func decodeRequestBody(w http.ResponseWriter, r *http.Request) (string, error) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
