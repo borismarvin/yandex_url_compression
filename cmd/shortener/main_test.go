@@ -9,18 +9,19 @@ import (
 )
 
 func TestHandleRedirect(t *testing.T) {
-	shortener := idToURLMap{
-		links: make(map[string]string),
+	m := idToURLMap{
+		links: map[string]string{
+			"123": "https://practicum.yandex.ru/",
+		},
+		id: "123",
 	}
-	shortener.id = "123"
-	shortener.links[shortener.id] = "https://practicum.yandex.ru/"
-	shortenedURL := fmt.Sprintf("http://localhost:8080/%s", shortener.id)
+	shortenedURL := fmt.Sprintf("http://localhost:8080/%s", m.id)
 	req, err := http.NewRequest("GET", shortenedURL, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(shortener.handleRedirect)
+	handler := http.HandlerFunc(m.handleRedirect)
 
 	handler.ServeHTTP(rr, req)
 
@@ -29,7 +30,7 @@ func TestHandleRedirect(t *testing.T) {
 			status, http.StatusFound)
 	}
 
-	expectedLocation := shortener.links[shortener.id]
+	expectedLocation := m.links[m.id]
 	if location := rr.Header().Get("Location"); location != expectedLocation {
 		t.Errorf("handler returned unexpected location header: got %v want %v",
 			location, expectedLocation)
@@ -37,18 +38,20 @@ func TestHandleRedirect(t *testing.T) {
 }
 
 func TestHandleShortenURL(t *testing.T) {
-	shortener := idToURLMap{
-		links: make(map[string]string),
+	m := idToURLMap{
+		links: map[string]string{
+			"123": "https://practicum.yandex.ru/",
+		},
+		id: "123",
 	}
-	originalURL := "https://practicum.yandex.ru/"
+	originalURL := m.links[m.id]
 	body := strings.NewReader("https://practicum.yandex.ru/")
 	req, err := http.NewRequest("POST", "/", body)
 	if err != nil {
 		t.Fatal(err)
 	}
-	shortener.id = "123"
 	rr := httptest.NewRecorder()
-	shortener.handleShortenURL(rr, req)
+	m.handleShortenURL(rr, req)
 
 	if rr.Code != http.StatusCreated {
 		t.Errorf("handler returned wrong status code: got %v want %v",
@@ -61,14 +64,14 @@ func TestHandleShortenURL(t *testing.T) {
 			contentType, expectedContentType)
 	}
 
-	expectedURL := fmt.Sprintf("http://localhost:8080/%s", shortener.id)
+	expectedURL := fmt.Sprintf("http://localhost:8080/%s", m.id)
 	bodyBytes := rr.Body.Bytes()
 	if string(bodyBytes) != expectedURL {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			string(bodyBytes), expectedURL)
 	}
 
-	if url := shortener.links[shortener.id]; url != originalURL {
+	if url := m.links[m.id]; url != originalURL {
 		t.Errorf("handler failed to add URL to map: got %v want %v",
 			url, originalURL)
 	}
