@@ -66,12 +66,10 @@ func (iu idToURLMap) handleRedirect(w http.ResponseWriter, r *http.Request) {
 }
 
 func decodeRequestBody(w http.ResponseWriter, r *http.Request) (string, error) {
-	// Читаем данные из запроса
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, "Error reading request body", http.StatusBadRequest)
 	}
-	// Выводим данные на серверной стороне
 	return string(body), nil
 
 }
