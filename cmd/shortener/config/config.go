@@ -18,13 +18,13 @@ func NewGetArgsBuilder() *ConcreteGetArgsBuilder {
 	return &ConcreteGetArgsBuilder{args: &Args{}}
 }
 
-func (cgab *ConcreteGetArgsBuilder) SetStart(start_addr string) GetArgsBuilder {
-	cgab.args.StartAddr = start_addr
+func (cgab *ConcreteGetArgsBuilder) SetStart(startAddr string) GetArgsBuilder {
+	cgab.args.StartAddr = startAddr
 	return cgab
 }
 
-func (cgab *ConcreteGetArgsBuilder) SetBase(base_addr string) GetArgsBuilder {
-	cgab.args.BaseAddr = base_addr
+func (cgab *ConcreteGetArgsBuilder) SetBase(baseAddr string) GetArgsBuilder {
+	cgab.args.BaseAddr = baseAddr
 	return cgab
 }
 func (cgab *ConcreteGetArgsBuilder) Build() *Args {
