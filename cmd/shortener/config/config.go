@@ -1,8 +1,8 @@
 package config
 
 type Args struct {
-	Start_addr string
-	Base_addr  string
+	StartAddr string
+	BaseAddr  string
 }
 
 type GetArgsBuilder interface {
@@ -19,12 +19,12 @@ func NewGetArgsBuilder() *ConcreteGetArgsBuilder {
 }
 
 func (cgab *ConcreteGetArgsBuilder) SetStart(start_addr string) GetArgsBuilder {
-	cgab.args.Start_addr = start_addr
+	cgab.args.StartAddr = start_addr
 	return cgab
 }
 
 func (cgab *ConcreteGetArgsBuilder) SetBase(base_addr string) GetArgsBuilder {
-	cgab.args.Base_addr = base_addr
+	cgab.args.BaseAddr = base_addr
 	return cgab
 }
 func (cgab *ConcreteGetArgsBuilder) Build() *Args {

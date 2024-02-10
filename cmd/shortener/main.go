@@ -31,13 +31,13 @@ func main() {
 		links: make(map[string]string),
 	}
 	shortener.id = generateID()
-	shortener.base = args.Base_addr
+	shortener.base = args.BaseAddr
 	r := mux.NewRouter()
 	shortenedURL := fmt.Sprintf("/%s", shortener.id)
 	r.HandleFunc(shortenedURL, shortener.handleRedirect)
 	r.HandleFunc("/", shortener.handleShortenURL)
 	http.Handle("/", r)
-	http.ListenAndServe(args.Start_addr, nil)
+	http.ListenAndServe(args.StartAddr, nil)
 }
 
 func (iu idToURLMap) handleShortenURL(w http.ResponseWriter, r *http.Request) {
