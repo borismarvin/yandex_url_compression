@@ -1,32 +1,21 @@
 package config
 
-type Args struct {
-	StartAddr string
-	BaseAddr  string
+import (
+	"flag"
+)
+
+type Config struct {
+	ServerAddress string
+	BaseURL       string
 }
 
-type GetArgsBuilder interface {
-	SetStart(string) GetArgsBuilder
-	SetBase(string) GetArgsBuilder
-	Build() *Args
-}
-type ConcreteGetArgsBuilder struct {
-	args *Args
-}
+func NewConfig() *Config {
+	serverAddr := flag.String("a", "localhost:8888", "HTTP server start address")
+	baseAddr := flag.String("b", "http://localhost:8888/", "Base address")
+	flag.Parse()
 
-func NewGetArgsBuilder() *ConcreteGetArgsBuilder {
-	return &ConcreteGetArgsBuilder{args: &Args{}}
-}
-
-func (cgab *ConcreteGetArgsBuilder) SetStart(startAddr string) GetArgsBuilder {
-	cgab.args.StartAddr = startAddr
-	return cgab
-}
-
-func (cgab *ConcreteGetArgsBuilder) SetBase(baseAddr string) GetArgsBuilder {
-	cgab.args.BaseAddr = baseAddr
-	return cgab
-}
-func (cgab *ConcreteGetArgsBuilder) Build() *Args {
-	return cgab.args
+	return &Config{
+		ServerAddress: *serverAddr,
+		BaseURL:       *baseAddr,
+	}
 }
