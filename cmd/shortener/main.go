@@ -21,8 +21,8 @@ type idToURLMap struct {
 }
 
 func main() {
-	startAddr := flag.String("a", ":8080", "HTTP server start address")
-	baseAddr := flag.String("b", "http://localhost:8080/", "Base address")
+	startAddr := flag.String("a", "3030", "HTTP server start address")
+	baseAddr := flag.String("b", "http://localhost", "Base address")
 	builder := config.NewGetArgsBuilder()
 	args := builder.
 		SetStart(*startAddr).
@@ -31,13 +31,13 @@ func main() {
 		links: make(map[string]string),
 	}
 	shortener.id = generateID()
-	shortener.base = args.BaseAddr
+	shortener.base = args.BaseAddr + ":" + args.StartAddr + "/"
 	r := mux.NewRouter()
 	shortenedURL := fmt.Sprintf("/%s", shortener.id)
 	r.HandleFunc(shortenedURL, shortener.handleRedirect)
 	r.HandleFunc("/", shortener.handleShortenURL)
 	http.Handle("/", r)
-	http.ListenAndServe(*startAddr, nil)
+	http.ListenAndServe(":"+args.StartAddr, r)
 }
 
 func (iu idToURLMap) handleShortenURL(w http.ResponseWriter, r *http.Request) {
