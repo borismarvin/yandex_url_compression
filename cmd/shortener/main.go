@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io"
 	"math/rand"
@@ -15,25 +16,29 @@ const keyLength = 6
 
 type idToURLMap struct {
 	links map[string]string
-	base  string
 	id    string
+	base  string
 }
 
 func main() {
-	conf := config.NewConfig()
-
+	startAddr := flag.String("a", "localhost:3030", "HTTP server start address")
+	baseAddr := flag.String("b", "http://localhost:8000/", "Base address")
+	flag.Parse()
+	builder := config.NewGetArgsBuilder()
+	args := builder.
+		SetStart(*startAddr).
+		SetBase(*baseAddr).Build()
 	shortener := idToURLMap{
 		links: make(map[string]string),
-		base:  conf.BaseURL,
+		base:  args.BaseAddr,
 	}
 	shortener.id = generateID()
 	r := mux.NewRouter()
-	r.HandleFunc("/", shortener.handleShortenURL).Methods("POST")
 	shortenedURL := fmt.Sprintf("/%s", shortener.id)
-	r.HandleFunc(shortenedURL, shortener.handleRedirect).Methods("GET")
+	r.HandleFunc(shortenedURL, shortener.handleRedirect)
+	r.HandleFunc("/", shortener.handleShortenURL)
 	http.Handle("/", r)
-
-	http.ListenAndServe(conf.ServerAddress, r)
+	http.ListenAndServe(args.StartAddr, r)
 }
 
 func (iu idToURLMap) handleShortenURL(w http.ResponseWriter, r *http.Request) {
@@ -51,7 +56,6 @@ func (iu idToURLMap) handleShortenURL(w http.ResponseWriter, r *http.Request) {
 	iu.links[id] = url
 
 	shortenedURL := iu.base + id
-
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "text/plain")
 	w.Write([]byte(shortenedURL))
