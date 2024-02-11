@@ -65,7 +65,7 @@ func TestHandleShortenURL(t *testing.T) {
 			contentType, expectedContentType)
 	}
 
-	expectedURL := m.base + m.id
+	expectedURL := m.base + "/" + m.id
 	bodyBytes := rr.Body.Bytes()
 	if string(bodyBytes) != expectedURL {
 		t.Errorf("handler returned unexpected body: got %v want %v",
