@@ -21,8 +21,8 @@ type idToURLMap struct {
 }
 
 func main() {
-	startAddr := flag.String("a", "localhost:3030", "HTTP server start address")
-	baseAddr := flag.String("b", "http://localhost:8000/", "Base address")
+	startAddr := flag.String("a", "localhost:8080", "HTTP server start address")
+	baseAddr := flag.String("b", "http://localhost:8080/", "Base address")
 	flag.Parse()
 	builder := config.NewGetArgsBuilder()
 	args := builder.
