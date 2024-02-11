@@ -22,7 +22,7 @@ type idToURLMap struct {
 
 func main() {
 	startAddr := flag.String("a", ":8080", "HTTP server start address")
-	baseAddr := flag.String("b", "http://localhost:8080", "Base address")
+	baseAddr := flag.String("b", "http://localhost:8080/", "Base address")
 	builder := config.NewGetArgsBuilder()
 	args := builder.
 		SetStart(*startAddr).
@@ -37,7 +37,7 @@ func main() {
 	r.HandleFunc(shortenedURL, shortener.handleRedirect)
 	r.HandleFunc("/", shortener.handleShortenURL)
 	http.Handle("/", r)
-	http.ListenAndServe(args.StartAddr, nil)
+	http.ListenAndServe(*startAddr, nil)
 }
 
 func (iu idToURLMap) handleShortenURL(w http.ResponseWriter, r *http.Request) {
@@ -47,7 +47,6 @@ func (iu idToURLMap) handleShortenURL(w http.ResponseWriter, r *http.Request) {
 	}
 
 	url, err := decodeRequestBody(w, r)
-
 	if err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
@@ -55,7 +54,7 @@ func (iu idToURLMap) handleShortenURL(w http.ResponseWriter, r *http.Request) {
 	id := iu.id
 	iu.links[id] = url
 
-	shortenedURL := iu.base + "/" + id
+	shortenedURL := iu.base + id
 
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "text/plain")
