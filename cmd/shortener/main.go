@@ -6,6 +6,7 @@ import (
 	"io"
 	"math/rand"
 	"net/http"
+	"os"
 
 	"github.com/borismarvin/yandex_url_compression.git/cmd/shortener/config"
 	"github.com/gorilla/mux"
@@ -21,13 +22,20 @@ type idToURLMap struct {
 }
 
 func main() {
-	startAddr := flag.String("a", "localhost:8080", "HTTP server start address")
-	baseAddr := flag.String("b", "http://localhost:8080", "Base address")
+	startAddr := os.Getenv("SERVER_ADDRESS")
+	if startAddr == "" {
+		flag.StringVar(&startAddr, "a", "localhost:8080", "HTTP server start address")
+	}
+	baseAddr := os.Getenv("BASE_URL")
+	if baseAddr == "" {
+		flag.StringVar(&baseAddr, "b", "http://localhost:8080", "Base address")
+	}
+
 	flag.Parse()
 	builder := config.NewGetArgsBuilder()
 	args := builder.
-		SetStart(*startAddr).
-		SetBase(*baseAddr).Build()
+		SetStart(startAddr).
+		SetBase(baseAddr).Build()
 	shortener := idToURLMap{
 		links: make(map[string]string),
 		base:  args.BaseAddr,
