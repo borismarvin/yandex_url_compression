@@ -22,13 +22,24 @@ type idToURLMap struct {
 }
 
 func main() {
-	startAddr := os.Getenv("SERVER_ADDRESS")
-	if startAddr == "" {
-		flag.StringVar(&startAddr, "a", "localhost:8080", "HTTP server start address")
+
+	var startAddr, baseAddr string
+
+	// Сначала проверяем переменные окружения
+	envStartAddr := os.Getenv("SERVER_ADDRESS")
+	envBaseAddr := os.Getenv("BASE_ADDRESS")
+
+	// Затем, если переменные окружения не установлены, используем аргументы командной строки
+	flag.StringVar(&startAddr, "a", "localhost:8080", "HTTP server start address")
+	flag.StringVar(&baseAddr, "b", "http://localhost:8080", "Base address")
+	flag.Parse()
+
+	// Если переменные окружения установлены, они перезаписывают значения аргументов командной строки
+	if envStartAddr != "" {
+		startAddr = envStartAddr
 	}
-	baseAddr := os.Getenv("BASE_URL")
-	if baseAddr == "" {
-		flag.StringVar(&baseAddr, "b", "http://localhost:8080", "Base address")
+	if envBaseAddr != "" {
+		baseAddr = envBaseAddr
 	}
 
 	flag.Parse()
