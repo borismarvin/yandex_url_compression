@@ -1,4 +1,4 @@
-// iter1
+// iter3
 package main
 
 import (
@@ -6,6 +6,8 @@ import (
 	"io"
 	"math/rand"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -21,10 +23,11 @@ func main() {
 		links: make(map[string]string),
 	}
 	shortener.id = generateID()
-
+	r := mux.NewRouter()
 	shortenedURL := fmt.Sprintf("/%s", shortener.id)
-	http.HandleFunc(shortenedURL, shortener.handleRedirect)
-	http.HandleFunc("/", shortener.handleShortenURL)
+	r.HandleFunc(shortenedURL, shortener.handleRedirect)
+	r.HandleFunc("/", shortener.handleShortenURL)
+	http.Handle("/", r)
 	http.ListenAndServe(":8080", nil)
 }
 
@@ -65,7 +68,6 @@ func (iu idToURLMap) handleRedirect(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, originalURL, http.StatusTemporaryRedirect)
 }
-
 func decodeRequestBody(w http.ResponseWriter, r *http.Request) (string, error) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
