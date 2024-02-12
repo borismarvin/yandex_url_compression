@@ -1,13 +1,11 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"io"
 	"math/rand"
 	"net/http"
 
-	"github.com/borismarvin/yandex_url_compression.git/cmd/shortener/config"
 	"github.com/gorilla/mux"
 )
 
@@ -17,20 +15,11 @@ const keyLength = 6
 type idToURLMap struct {
 	links map[string]string
 	id    string
-	base  string
 }
 
 func main() {
-	startAddr := flag.String("a", "localhost:8080", "HTTP server start address")
-	baseAddr := flag.String("b", "http://localhost:8080", "Base address")
-	flag.Parse()
-	builder := config.NewGetArgsBuilder()
-	args := builder.
-		SetStart(*startAddr).
-		SetBase(*baseAddr).Build()
 	shortener := idToURLMap{
 		links: make(map[string]string),
-		base:  args.BaseAddr,
 	}
 	shortener.id = generateID()
 	r := mux.NewRouter()
@@ -38,7 +27,7 @@ func main() {
 	r.HandleFunc(shortenedURL, shortener.handleRedirect)
 	r.HandleFunc("/", shortener.handleShortenURL)
 	http.Handle("/", r)
-	http.ListenAndServe(args.StartAddr, r)
+	http.ListenAndServe(":8080", nil)
 }
 
 func (iu idToURLMap) handleShortenURL(w http.ResponseWriter, r *http.Request) {
@@ -48,6 +37,7 @@ func (iu idToURLMap) handleShortenURL(w http.ResponseWriter, r *http.Request) {
 	}
 
 	url, err := decodeRequestBody(w, r)
+
 	if err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
@@ -55,7 +45,8 @@ func (iu idToURLMap) handleShortenURL(w http.ResponseWriter, r *http.Request) {
 	id := iu.id
 	iu.links[id] = url
 
-	shortenedURL := iu.base + "/" + id
+	shortenedURL := fmt.Sprintf("http://localhost:8080/%s", id)
+
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "text/plain")
 	w.Write([]byte(shortenedURL))
